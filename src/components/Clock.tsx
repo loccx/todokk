@@ -1,65 +1,68 @@
-"use client"
+"use client";
+import React from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/App";
+import type { Item } from "@/types";
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
-import { supabase } from "@/App"
-import type { Item } from "@/types"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Flame, Clock } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Flame, Clock } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 interface ClockProps {
-  items: Item[]
-  setItems: React.Dispatch<React.SetStateAction<Item[]>>
+  items: Item[];
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  ratio: number;
 }
 
-const SClock: React.FC<ClockProps> = ({ items, setItems }) => {
-  const [streakCount, setStreakCount] = useState(0)
-  const [timeUntilMidnight, setTimeUntilMidnight] = useState("")
-  const [userTimeZone, setUserTimeZone] = useState("UTC")
+const SClock: React.FC<ClockProps> = ({ items, setItems, ratio }) => {
+  const [streakCount, setStreakCount] = useState(0);
+  const [timeUntilMidnight, setTimeUntilMidnight] = useState("");
+  const [userTimeZone, setUserTimeZone] = useState("UTC");
 
   useEffect(() => {
-    const msUntilMidnight = updateCountdown()
-    const countdownInterval = setInterval(updateCountdown, 1000)
+    const msUntilMidnight = updateCountdown();
+    const countdownInterval = setInterval(updateCountdown, 1000);
     const midnightTimeout = setTimeout(() => {
-      checkStreak()
-      const dailyRefresh = setInterval(checkStreak, 24 * 60 * 60 * 1000)
-      return () => clearInterval(dailyRefresh)
-    }, msUntilMidnight)
+      checkStreak();
+      const dailyRefresh = setInterval(checkStreak, 24 * 60 * 60 * 1000);
+      return () => clearInterval(dailyRefresh);
+    }, msUntilMidnight);
 
     return () => {
-      clearInterval(countdownInterval)
-      clearTimeout(midnightTimeout)
-    }
-  }, [items]) // Re-run when items change
+      clearInterval(countdownInterval);
+      clearTimeout(midnightTimeout);
+    };
+  }, [items]);
 
   const updateCountdown = () => {
-    const now = new Date()
-    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    setUserTimeZone(userTimezone)
+    const now = new Date();
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    setUserTimeZone(userTimezone);
 
-    const midnight = new Date(now)
-    midnight.setHours(24, 0, 0, 0)
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0);
 
-    const diffMs = midnight.getTime() - now.getTime()
-    const diffHrs = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-    const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
-    const diffSecs = Math.floor((diffMs % (1000 * 60)) / 1000)
+    const diffMs = midnight.getTime() - now.getTime();
+    const diffHrs = Math.floor(
+      (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const diffSecs = Math.floor((diffMs % (1000 * 60)) / 1000);
 
-    setTimeUntilMidnight(`${diffHrs}h ${diffMins}m ${diffSecs}s`)
+    setTimeUntilMidnight(`${diffHrs}h ${diffMins}m ${diffSecs}s`);
 
-    return diffMs
-  }
+    return diffMs;
+  };
 
   const checkStreak = async () => {
     const {
       data: { user },
-    } = await supabase.auth.getUser()
-    if (!user) return
+    } = await supabase.auth.getUser();
+    if (!user) return;
 
-    const allCompleted = items.every((item) => item.done)
+    const allCompleted = items.every((item) => item.done);
 
     try {
       if (allCompleted) {
@@ -68,40 +71,46 @@ const SClock: React.FC<ClockProps> = ({ items, setItems }) => {
           user_id: user.id,
           current_streak: streakCount + 1,
           last_update: new Date().toISOString(),
-        })
+        });
 
-        if (!error) setStreakCount((prev) => prev + 1)
+        if (!error) setStreakCount((prev) => prev + 1);
       } else {
         // Reset streak
         const { error } = await supabase.from("user_streaks").upsert({
           user_id: user.id,
           current_streak: 0,
           last_update: new Date().toISOString(),
-        })
+        });
 
-        if (!error) setStreakCount(0)
+        if (!error) setStreakCount(0);
       }
 
       // Reset all items
-      await resetAllItems(user.id)
+      await resetAllItems(user.id);
     } catch (error) {
-      console.error("Streak update error:", error)
+      console.error("Streak update error:", error);
     }
-  }
+  };
 
   const resetAllItems = async (userId: string) => {
     try {
-      const { error } = await supabase.from("test").update({ done: false }).eq("user_id", userId)
+      const { error } = await supabase
+        .from("test")
+        .update({ done: false })
+        .eq("user_id", userId);
 
       if (!error) {
         // Refresh local state
-        const { data } = await supabase.from("test").select().eq("user_id", userId)
-        setItems(data || [])
+        const { data } = await supabase
+          .from("test")
+          .select()
+          .eq("user_id", userId);
+        setItems(data || []);
       }
     } catch (error) {
-      console.error("Reset items error:", error)
+      console.error("Reset items error:", error);
     }
-  }
+  };
 
   return (
     <Card className="mb-4">
@@ -114,6 +123,10 @@ const SClock: React.FC<ClockProps> = ({ items, setItems }) => {
               {streakCount} days
             </Badge>
           </div>
+          <Progress
+            value={ratio}
+            className="w-[60%] h-2 bg-gray-200 dark:bg-gray-800"
+          />
           <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="h-4 w-4" />
             <span className="text-sm">New day in:</span>
@@ -121,10 +134,12 @@ const SClock: React.FC<ClockProps> = ({ items, setItems }) => {
           </div>
         </div>
         <Separator className="my-2" />
-        <div className="text-xs text-muted-foreground">Timezone: {userTimeZone}</div>
+        <div className="text-xs text-muted-foreground">
+          Timezone: {userTimeZone}
+        </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default SClock
+export default SClock;

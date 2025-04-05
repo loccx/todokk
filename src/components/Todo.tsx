@@ -14,10 +14,22 @@ export function Todo() {
   const [item, setItem] = useState<Item>({ description: "", done: false });
   const [items, setItems] = useState<Item[]>([]);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [ratio, setRatio] = useState<number>(0);
 
   useEffect(() => {
     getItems();
   }, [success]);
+
+  useEffect(() => { // counts whenever items updates
+    const listSize = items.length;
+    if (!listSize) setRatio(0)
+    let done = 0;
+    for (const it of items) {
+      if (it.done) done++;
+    }
+    setRatio((done / listSize) * 100)
+
+  }, [items])
 
   const getItems = async () => {
     const {
@@ -118,7 +130,7 @@ export function Todo() {
 
   return (
     <div className="space-y-4 p-4 flex-1">
-      <SClock items={items} setItems={setItems}/>
+      <SClock items={items} setItems={setItems} ratio={ratio}/>
       <form onSubmit={handleSubmit} className="space-y-4 flex">
         <Input
           type="text"
