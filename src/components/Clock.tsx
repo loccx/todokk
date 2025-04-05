@@ -6,7 +6,7 @@ import type { Item } from "@/types";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+// import { Separator } from "@/components/ui/separator";
 import { Flame, Clock } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
@@ -19,7 +19,7 @@ interface ClockProps {
 const SClock: React.FC<ClockProps> = ({ items, setItems, ratio }) => {
   const [streakCount, setStreakCount] = useState(0);
   const [timeUntilMidnight, setTimeUntilMidnight] = useState("");
-  const [userTimeZone, setUserTimeZone] = useState("UTC");
+//   const [userTimeZone, setUserTimeZone] = useState("UTC");
 
   useEffect(() => {
     const msUntilMidnight = updateCountdown();
@@ -38,8 +38,8 @@ const SClock: React.FC<ClockProps> = ({ items, setItems, ratio }) => {
 
   const updateCountdown = () => {
     const now = new Date();
-    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    setUserTimeZone(userTimezone);
+    // const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // setUserTimeZone(userTimezone);
 
     const midnight = new Date(now);
     midnight.setHours(24, 0, 0, 0);
