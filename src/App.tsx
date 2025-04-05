@@ -40,12 +40,22 @@ function App() {
   }  
 
   if (!session) {
-    return <Auth
-            supabaseClient={supabase}
-            appearance={{ theme: ThemeSupa }}
-            // providers={[]}
-            theme='dark'
-            />;
+    return (
+      <Auth
+        supabaseClient={supabase}
+        appearance={{ theme: ThemeSupa }}
+        providers={[]}
+        theme='dark'
+        view="magic_link"
+        // localization={{
+        //   variables: {
+        //     magic_link: {
+        //       email_input_placeholder: 'Your email address',
+        //     },
+        //   },
+        // }}
+      />
+    );
   } else {
     return (
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
