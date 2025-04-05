@@ -62,11 +62,10 @@ const SClock: React.FC<ClockProps> = ({ items, setItems, ratio }) => {
     } = await supabase.auth.getUser();
     if (!user) return;
 
-    const allCompleted = items.every((item) => item.done);
+    const allCompleted = (items.every((item) => item.done)) && (items.length > 0);
 
     try {
       if (allCompleted) {
-        // Increment streak
         const { error } = await supabase.from("user_streaks").upsert({
           user_id: user.id,
           current_streak: streakCount + 1,
@@ -75,7 +74,6 @@ const SClock: React.FC<ClockProps> = ({ items, setItems, ratio }) => {
 
         if (!error) setStreakCount((prev) => prev + 1);
       } else {
-        // Reset streak
         const { error } = await supabase.from("user_streaks").upsert({
           user_id: user.id,
           current_streak: 0,
@@ -85,10 +83,9 @@ const SClock: React.FC<ClockProps> = ({ items, setItems, ratio }) => {
         if (!error) setStreakCount(0);
       }
 
-      // Reset all items
       await resetAllItems(user.id);
     } catch (error) {
-      console.error("Streak update error:", error);
+      console.error("streak update error:", error);
     }
   };
 
@@ -100,7 +97,6 @@ const SClock: React.FC<ClockProps> = ({ items, setItems, ratio }) => {
         .eq("user_id", userId);
 
       if (!error) {
-        // Refresh local state
         const { data } = await supabase
           .from("test")
           .select()
@@ -117,26 +113,27 @@ const SClock: React.FC<ClockProps> = ({ items, setItems, ratio }) => {
       <CardContent className="p-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <Flame className="h-5 w-5 text-orange-500" />
-            <span className="font-medium">Streak:</span>
+            <Flame className="h-5 w-5 text-indigo-400" />
+            <span className="font-medium">streak:</span>
             <Badge variant="secondary" className="text-base px-2">
               {streakCount} days
             </Badge>
           </div>
           <Progress
             value={ratio}
-            className="w-[60%] h-2 bg-gray-200 dark:bg-gray-800"
+            className="w-[60%] h-2 bg-blue-200 dark:bg-indigo-500"
+             
           />
           <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="h-4 w-4" />
-            <span className="text-sm">New day in:</span>
+            <span className="text-sm">new day:</span>
             <span className="font-mono text-sm">{timeUntilMidnight}</span>
           </div>
         </div>
-        <Separator className="my-2" />
-        <div className="text-xs text-muted-foreground">
-          Timezone: {userTimeZone}
-        </div>
+        {/* <Separator className="my-2" /> */}
+        {/* <div className="text-xs text-muted-foreground">
+          timezone: {userTimeZone}
+        </div> */}
       </CardContent>
     </Card>
   );
