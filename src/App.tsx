@@ -18,16 +18,7 @@ import { ThemeProvider } from "./components/theme-provider";
 const supa_url = import.meta.env.VITE_SUPA_URL;
 const anon_key = import.meta.env.VITE_ANON_KEY;
 
-export const supabase = createClient(supa_url, anon_key,
-  {
-    auth: {
-      flowType: 'pkce',
-      detectSessionInUrl: true,
-      autoRefreshToken: true,
-      siteURL: 'https://todokk.vercel.app/'
-    }
-  }
-);
+export const supabase = createClient(supa_url, anon_key);
 
 function App() {
   
