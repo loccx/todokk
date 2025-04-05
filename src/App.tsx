@@ -9,6 +9,7 @@ import { Session } from "@supabase/supabase-js";
 
 import { Button } from "./components/ui/button";
 import { Todo } from "./components/Todo";
+import { Toaster } from "sonner";
 
 import { ThemeProvider } from "./components/theme-provider";
 // import { ThemeToggle } from './components/theme-toggle'
@@ -42,6 +43,7 @@ function App() {
   } else {
     return (
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <Toaster position='bottom-center' richColors/>
         {/* <ThemeToggle/> */}
         <div className="flex">
           <Todo />

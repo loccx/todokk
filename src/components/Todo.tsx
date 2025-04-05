@@ -4,6 +4,7 @@ import { supabase } from "@/App.tsx";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Item } from "@/types";
+import { toast } from "sonner";
 
 export function Todo() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -71,7 +72,7 @@ export function Todo() {
       if (error) throw error;
 
       setSuccess(true);
-      setTimeout(() => setSuccess(false), 1000);
+      toast.success('added!')
       setItem({ description: "", done: false });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Unknown error occurred");
@@ -124,13 +125,13 @@ export function Todo() {
           onChange={handleChange}
           placeholder="create"
           disabled={loading}
+          required
         />
         <Button variant="ghost" type="submit" disabled={loading}>
           {loading ? "inserting..." : "add"}
         </Button>
       </form>
       {error && <p className="text-red-500">{error}</p>}
-      {success && <p className="text-green-500">insert successful!</p>}
       <ul className="space-y-2">
         {items.map((todo) => (
           <li
@@ -138,9 +139,7 @@ export function Todo() {
             onClick={() => toggleDone(todo.id!)}
             onContextMenu={(e) => {
               e.preventDefault();
-              if (confirm("delete?")) {
-                deleteItem(todo.id!);
-              }
+              deleteItem(todo.id!);
             }}
             className={`p-3 rounded-lg cursor-pointer
         ${todo.done ? "line-through text-gray-900" : ""}
