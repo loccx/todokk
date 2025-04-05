@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Item } from "@/types";
 import { toast } from "sonner";
+import SClock from "@/components/Clock"
 
 export function Todo() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -117,6 +118,7 @@ export function Todo() {
 
   return (
     <div className="space-y-4 p-4 flex-1">
+      <SClock items={items} setItems={setItems}/>
       <form onSubmit={handleSubmit} className="space-y-4 flex">
         <Input
           type="text"

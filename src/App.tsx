@@ -9,6 +9,7 @@ import { Session } from "@supabase/supabase-js";
 
 import { Button } from "./components/ui/button";
 import { Todo } from "./components/Todo";
+// import Clock from "./components/Clock"
 import { Toaster } from "sonner";
 
 import { ThemeProvider } from "./components/theme-provider";
@@ -39,7 +40,12 @@ function App() {
   }  
 
   if (!session) {
-    return <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />;
+    return <Auth
+            supabaseClient={supabase}
+            appearance={{ theme: ThemeSupa }}
+            // providers={[]}
+            theme='dark'
+            />;
   } else {
     return (
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
