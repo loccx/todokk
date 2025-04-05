@@ -72,7 +72,7 @@ export function Todo() {
       if (error) throw error;
 
       setSuccess(true);
-      toast.success('added!')
+      toast.success('added.')
       setItem({ description: "", done: false });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Unknown error occurred");
@@ -106,8 +106,8 @@ export function Todo() {
         throw error;
       }
 
-      console.log("Delete successful, data returned:", data);
       getItems();
+      toast.error('deleted.')
     } catch (err) {
       console.error("Full delete error:", err);
     } finally {
